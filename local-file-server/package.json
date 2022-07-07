@@ -1,0 +1,6 @@
+{
+  "license": "MIT",
+  "dependencies": {
+    "simple-express-static-server": "spadin/simple-express-static-server"
+  }
+}

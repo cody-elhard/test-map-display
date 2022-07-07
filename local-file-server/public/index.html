@@ -54,9 +54,6 @@
     
       <div class="col-md-3" id="side-panel">
         <h1 class="text-center">Attractions</h1>
-        <button id="zoomToPlace" class="form-control btn-primary">
-          Zocalo
-        </button>
       </div>
     
       <div id="mapdiv" class="col-md-9"> </div>
@@ -74,10 +71,27 @@
 
   <script>
     var myMap = L.map("mapdiv").setView([19.4, -99.1], 11);
-    // Just get github hosted file to avoid CORS issues
-    var geojsonLayer = new L.GeoJSON.AJAX("https://github.com/cody-elhard/test-map-display/blob/main/attractions.geojson").addTo(myMap);
+    // Dont get forget to start local server via `local-file-server./node_modules/.bin/simple-server /public`
+    var geojsonLayer = new L.GeoJSON.AJAX(
+      "http://localhost:4567/attractions.geojson"
+      , {
+        pointToLayer: function (feature, latlng) {
+          // Add marker
+          L.marker(latlng).addTo(myMap).bindPopup(feature.properties.name);
 
-    var marker = L.marker([19.43278, -99.13333], { fillColor: '#000' }).addTo(myMap).bindPopup("<b>Mexico City</b>");
+          // Add button to side panel
+          $("#side-panel").append(
+            $("<button>")
+              .attr("class", "form-control")
+              .attr("class", "btn btn-primary")
+              .text(feature.properties.name)
+              .click(function () {
+                myMap.setView(latlng, 17);
+              })
+          );
+        }
+      }
+    ).addTo(myMap);
 
     var backgroundLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -92,10 +106,6 @@
       mapCoords += 'Longitude: ' + myMap.getCenter().lng.toFixed(4) + ' ';
       mapCoords += 'Zoom Level: ' + myMap.getZoom();
       $("#map_coords").html(mapCoords);
-    });
-
-    $('#zoomToPlace').click(function() {
-      myMap.setView([19.43278, -99.13333], 17);
     });
   </script>
 </body>

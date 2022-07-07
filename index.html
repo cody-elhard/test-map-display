@@ -74,7 +74,8 @@
 
   <script>
     var myMap = L.map("mapdiv").setView([19.4, -99.1], 11);
-    var geojsonLayer = new L.GeoJSON.AJAX("./attractions.geojson").addTo(myMap);
+    // Just get github hosted file to avoid CORS issues
+    var geojsonLayer = new L.GeoJSON.AJAX("https://github.com/cody-elhard/test-map-display/blob/main/attractions.geojson").addTo(myMap);
 
     var marker = L.marker([19.43278, -99.13333], { fillColor: '#000' }).addTo(myMap).bindPopup("<b>Mexico City</b>");
 

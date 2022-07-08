@@ -20,6 +20,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.js"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+
   <style>
     #header {
       height: 75px;
@@ -53,6 +55,12 @@
       </div>
     
       <div class="col-md-3" id="side-panel">
+        <button id="bufferButton" class="form-control btn-warning">
+          Buffer
+        </button>
+
+        <br />
+
         <h1 class="text-center">Attractions</h1>
       </div>
     
@@ -68,7 +76,7 @@
       </div>
     </div>
   </div>
-
+ 
   <script>
     var myMap = L.map("mapdiv").setView([19.4, -99.1], 11);
     // Dont get forget to start local server via `local-file-server./node_modules/.bin/simple-server /public`
@@ -91,13 +99,17 @@
           );
         }
       }
-    ).addTo(myMap);
+    )
+
+    console.log(geojsonLayer);
+
+    geojsonLayer.addTo(myMap);
 
     var backgroundLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       subdomains: ['a', 'b', 'c']
     }); 
-    
+     
     myMap.addLayer(backgroundLayer);
 
     $("#mapdiv").bind("mousemove", function(event) {
@@ -106,6 +118,19 @@
       mapCoords += 'Longitude: ' + myMap.getCenter().lng.toFixed(4) + ' ';
       mapCoords += 'Zoom Level: ' + myMap.getZoom();
       $("#map_coords").html(mapCoords);
+    });
+
+    $("#bufferButton").click(function () {
+      new L.GeoJSON.AJAX(
+        "http://localhost:4567/attractions.geojson"
+        , {
+          onEachFeature: function (feature, layer) {
+            console.log(feature);
+            var buffer = turf.buffer(feature, 1, { units: 'miles' });
+            L.geoJSON(buffer).addTo(myMap);
+          }
+        }
+      )
     });
   </script>
 </body>
